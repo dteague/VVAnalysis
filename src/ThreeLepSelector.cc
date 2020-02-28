@@ -62,7 +62,7 @@ void ThreeLepSelector::Init(TTree *tree) {
 		     {"FourTopMVAEl", FourTopMVAEl},
                      {"FourTopCutBasedEl", FourTopCutBasedEl},
                      {"FakeRate", FakeRate},};
-    yearMap_ = {{"yr2016", yr2016}, {"yr2017", yr2017}, {"yr2018", yr2018},};
+    yearMap_ = {{"2016", yr2016}, {"2017", yr2017}, {"2018", yr2018},};
     
     // Continue
     b.SetTree(tree);
@@ -94,6 +94,8 @@ void ThreeLepSelector::Init(TTree *tree) {
     else if(name_tmp.find("2018") != std::string::npos) year_ = yr2018;
     else year_ = yr2016;
 
+    fReader.SetTree(tree);
+    
 #ifdef USETREE
     AddObject<TTree>(treeMap["tree"], "testTree", "testTree");
     treeMap["tree"]->Branch("NJets", &bNJets);
@@ -135,6 +137,15 @@ void ThreeLepSelector::Init(TTree *tree) {
 void ThreeLepSelector::SetBranchesNanoAOD() {
     //  NECESSARY!!!!
     b.CleanUp();
+    fReader.Restart();
+    if(year_ == yr2018 || year_ == yrdefault) {
+        Electron_MVA = {fReader, "Electron_mvaFall17V2noIso"};
+    } else if(year_ == yr2017) {
+	Electron_MVA = {fReader, "Electron_mvaFall17V1noIso"};
+    } else if(year_ == yr2016 || year_ == yrdefault) {
+	Electron_MVA = {fReader, "Electron_mvaSpring16GP"};
+	Electron_cutBased = {fReader, "Electron_cutBased_Sum16"};
+    }
     
 #ifdef TRIGGER
     b.SetBranch("HLT_DoubleMu8_Mass8_PFHT300", HLT_DoubleMu8_Mass8_PFHT300);
@@ -144,67 +155,10 @@ void ThreeLepSelector::SetBranchesNanoAOD() {
     b.SetBranch("HLT_PFJet450", HLT_PFJet450);
 #endif // TRIGGER
 	
-    b.SetBranch("nElectron",                  nElectron);
-    b.SetBranch("Electron_pt",                Electron_pt);
-    b.SetBranch("Electron_eta",               Electron_eta);
-    b.SetBranch("Electron_phi",               Electron_phi);
-    b.SetBranch("Electron_charge",            Electron_charge);
-    b.SetBranch("Electron_mass",              Electron_mass);
-    b.SetBranch("Electron_miniPFRelIso_all",  Electron_miniPFRelIso_all);
-    b.SetBranch("Electron_dxy",               Electron_dxy);
-    b.SetBranch("Electron_dz",                Electron_dz);
-    b.SetBranch("Electron_sip3d",             Electron_sip3d);
-    b.SetBranch("Electron_lostHits",          Electron_lostHits);
-    b.SetBranch("Electron_convVeto",          Electron_convVeto);
-    b.SetBranch("Electron_cutBased",       Electron_cutBased);
-    if(year_ == yr2018 || year_ == yrdefault) {
-	b.SetBranch("Electron_mvaFall17V2noIso",     Electron_MVA);
-	b.SetBranch("Electron_cutBased",             Electron_cutBased);
-    } else if(year_ == yr2017) {
-        b.SetBranch("Electron_mvaFall17V1noIso",     Electron_MVA);
-	b.SetBranch("Electron_cutBased",   Electron_cutBased);
-    } else if(year_ == yr2016 || year_ == yrdefault) {
-	b.SetBranch("Electron_mvaSpring16GP",        Electron_MVA);
-        b.SetBranch("Electron_cutBased_Sum16",       Electron_cutBased);
-    }
-    b.SetBranch("Electron_tightCharge", Electron_tightCharge);
-    b.SetBranch("Electron_sieie",                        Electron_sieie);
-    b.SetBranch("Electron_hoe",                          Electron_hoe);
-    b.SetBranch("Electron_deltaEtaSC",                   Electron_deltaEtaSC);
-    b.SetBranch("Electron_eInvMinusPInv",                Electron_eInvMinusPInv);
-    b.SetBranch("Electron_dr03EcalRecHitSumEt",          Electron_dr03EcalRecHitSumEt);
-    b.SetBranch("Electron_dr03HcalDepth1TowerSumEt",     Electron_dr03HcalDepth1TowerSumEt);
-    b.SetBranch("Electron_dr03TkSumPt",                  Electron_dr03TkSumPt);
-    // b.SetBranch("Electron_vidNestedWPBitmapSum16", Electron_vidBitmap);
-    b.SetBranch("Electron_eCorr", Electron_eCorr);
     
-    b.SetBranch("nMuon",                  nMuon);
-    b.SetBranch("Muon_pt",                Muon_pt);
-    b.SetBranch("Muon_eta",               Muon_eta);
-    b.SetBranch("Muon_phi",               Muon_phi);
-    b.SetBranch("Muon_mass",              Muon_mass);
-    b.SetBranch("Muon_charge",            Muon_charge);
-    b.SetBranch("Muon_mediumId",          Muon_mediumId);
-    b.SetBranch("Muon_miniPFRelIso_all",  Muon_miniPFRelIso_all);
-    b.SetBranch("Muon_dxy",               Muon_dxy);
-    b.SetBranch("Muon_dz",                Muon_dz);
-    b.SetBranch("Muon_sip3d",             Muon_sip3d);
-    b.SetBranch("Muon_isGlobal",          Muon_isGlobal);
-    b.SetBranch("Muon_isTracker",          Muon_isTracker);
-    b.SetBranch("Muon_isPFcand",          Muon_isPFcand);
-    b.SetBranch("Muon_tightCharge",       Muon_tightCharge);
-    
-    b.SetBranch("nJet",               nJet);
-    b.SetBranch("Jet_btagCSVV2",      Jet_btagCSVV2);
-    b.SetBranch("Jet_btagDeepB",      Jet_btagDeepB);
-    b.SetBranch("Jet_eta",            Jet_eta);
-    b.SetBranch("Jet_phi",            Jet_phi);
-    b.SetBranch("Jet_pt",             Jet_pt);
-    b.SetBranch("Jet_mass",           Jet_mass);
-    b.SetBranch("Jet_jetId",          Jet_jetId);
-    b.SetBranch("Jet_hadronFlavour",  Jet_hadronFlavour);
-    b.SetBranch("Jet_rawFactor",  Jet_rawFactor);
-
+    b.SetBranch("nElectron", nElectron);
+    b.SetBranch("nMuon", nMuon);
+    b.SetBranch("nJet", nJet);
     b.SetBranch("MET_pt",     MET);
     b.SetBranch("MET_phi",    type1_pfMETPhi);
 
@@ -212,10 +166,10 @@ void ThreeLepSelector::SetBranchesNanoAOD() {
     b.SetBranch("luminosityBlock", lumi);
 
     if(applyScaleFactors_) {
-	b.SetBranch("GenPart_pdgId",GenPart_pdgId);
-	b.SetBranch("GenPart_genPartIdxMother", GenPart_genPartIdxMother);
-	b.SetBranch("GenPart_status", GenPart_status);
 	b.SetBranch("nGenPart", nGenPart);
+	GenPart_pdgId = {tmpReader, "GenPart_pdgId"};                      
+	GenPart_genPartIdxMother = {tmpReader, "GenPart_genPartIdxMother"};
+	GenPart_status = {tmpReader, "GenPart_status"};
     }
     
     b.SetBranch("Flag_goodVertices", Flag_goodVertices);
@@ -227,8 +181,9 @@ void ThreeLepSelector::SetBranchesNanoAOD() {
     b.SetBranch("Flag_ecalBadCalibFilter", Flag_ecalBadCalibFilter);
     
 #ifdef CLOSEJET_REWEIGHT
-    b.SetBranch("Jet_L1", Jet_L1);
-    b.SetBranch("Jet_L2L3", Jet_L2L3);
+    Jet_L1 = {fReader, "Jet_L1"};
+    Jet_L2L3 = {fReader, "Jet_L2L3"};
+        
 #endif // CLOSEJET_REWEIGHT
 
     if (isMC_) {
@@ -251,7 +206,7 @@ void ThreeLepSelector::SetBranchesNanoAOD() {
 	    }
 	}
     } else if(year_ == yr2017) {    
-    	mvaValues[CBID_LOOSE] = {{0.488, -0.738667, 0.00986667, -0.64}, 
+	mvaValues[CBID_LOOSE] = {{0.488, -0.738667, 0.00986667, -0.64}, 
 				 {-0.045, -0.825, 0.005, -0.775},
 				 {0.176, -0.784333, 0.00513333, -0.733}};
 	mvaValues[CBID_TIGHT] = {{10, 0.36, 0.032, 0.68}, 
@@ -283,26 +238,10 @@ void ThreeLepSelector::clearValues() {
 
 void ThreeLepSelector::LoadBranchesNanoAOD(Long64_t entry, std::pair<Systematic, std::string> variation) {
     clearValues();
-
+    fReader.SetLocalEntry(entry);
+    
     b.SetEntry(entry);
 
-    if (nElectron > N_KEEP_MU_E_ || nMuon > N_KEEP_MU_E_ || nGenPart > N_KEEP_GEN_) {
-	std::string message = "Found more electrons or muons than max read number.\n    Found ";
-	message += std::to_string(nElectron);
-	message += " electrons.\n    Found ";
-	message += std::to_string(nMuon);
-	message += " Muons\n  --> Max read number was ";
-	message += std::to_string(N_KEEP_MU_E_);
-	message += "\nExiting because this can cause problems. Increase N_KEEP_MU_E_ to avoid this error.\n";
-	message += std::to_string(nGenPart);
-	message += " Gens\n  --> Max read number was ";
-	message += std::to_string(N_KEEP_GEN_);
-	message += "\nExiting because this can cause problems. Increase N_KEEP_GEN_ to avoid this error.\n";
-	throw std::domain_error(message);
-    }
-
-    if(eventVec[event]) return;
-    
     /// basic setups
     setupElectrons();
     setupMuons();
@@ -329,8 +268,7 @@ void ThreeLepSelector::setupMuons() {
 	    if((year_ == yr2016 && !passFullIso(goodLeptons.back().v, 0.76, 7.2)) ||   // Extra Iso requirement
 	       ((year_ == yr2017 || year_ == yr2018) && !passFullIso(goodLeptons.back().v, 0.74, 6.8))) {
 		goodLeptons.pop_back();
-	    } 
-            
+	    }
 	}
 	else if(isLooseMuon(i)) {
 	    looseLeptons.push_back(GoodPart(get4Vector(PID_MUON, i), PID_MUON * Muon_charge[i]));
@@ -393,34 +331,6 @@ void ThreeLepSelector::setupJets() {
 }
 
 void ThreeLepSelector::setupChannel() {
-    // if(goodLeptons.size() > 2) {
-    // 	channelName_ = "lll";
-    // 	if(goodLeptons[1].Charge() * goodLeptons[2].Charge() > 0) {
-    // 	    std::swap(goodLeptons[0], goodLeptons[2]);
-    // 	}
-    // 	else if(goodLeptons[0].Charge() * goodLeptons[2].Charge() > 0) {
-    // 	    std::swap(goodLeptons[1], goodLeptons[2]);
-    // 	}
-    // 	/// PT swap
-    // 	if(goodLeptons[0].Pt() < goodLeptons[1].Pt()) {
-    // 	    std::swap(goodLeptons[0], goodLeptons[1]);
-    // 	}
-    // }
-    // else if(goodLeptons.size() < 2) {
-    // 	channelName_ = "Unknown";
-    // }
-    // else if(goodLeptons[0].Id() == PID_MUON && goodLeptons[1].Id() == PID_MUON) {
-    // 	channelName_ = "mm";
-    // }
-    // else if(goodLeptons[0].Id() == PID_ELECTRON && goodLeptons[1].Id() == PID_ELECTRON) {
-    // 	channelName_ = "ee";
-    // }
-    // else {
-    // 	channelName_ = "em";
-    // 	if(goodLeptons[0].Pt() < goodLeptons[1].Pt()) {
-    // 	    std::swap(goodLeptons[0], goodLeptons[1]);
-    // 	}
-    // }
     if(goodLeptons.size() == 0) {
 	channelName_ = "Unknown";
     } else if(goodLeptons.size() == 1) {
@@ -510,7 +420,7 @@ bool ThreeLepSelector::passFakeableCuts(GoodPart& lep) {
 	return (Muon_mediumId[index] 
 		&& Muon_sip3d[index] < 4
 		&& Muon_tightCharge[index] == 2
-		&& passFullIso(lep.v, 0.72, 7.2)
+		//&& passFullIso(lep.v, 0.72, 7.2)
 		
 		);
     }
@@ -518,7 +428,7 @@ bool ThreeLepSelector::passFakeableCuts(GoodPart& lep) {
 	return (Electron_sip3d[index] < 4
 		&& Electron_tightCharge[index] == 2
 		&& Electron_lostHits[index] == 0
-		&& passFullIso(lep.v, 0.8, 7.2)
+		//&& passFullIso(lep.v, 0.8, 7.2)
 		);
     }
 }
@@ -950,12 +860,6 @@ void ThreeLepSelector::FillHistograms(Long64_t entry, std::pair<Systematic, std:
     bb4Pt = (bjetList.size() > 3) ? goodJets.at(bjetList[3]).Pt() : 0;
     bShape1 = event_pair.first;
     bShape2 = event_pair.second;
-    
-    // bHTb;
-    // bjlMass;
-    // bdphil;
-    // bdetal
-    
     treeMap["tree"]->Fill();
 #endif
  

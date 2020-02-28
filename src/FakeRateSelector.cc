@@ -19,16 +19,20 @@ void FakeRateSelector::Init(TTree *tree) {
     Analyzer.SetInputList(slaveClassList);
     Analyzer.Init(tree);
     Analyzer.SetBranches();
+    fReader.SetTree(tree);
     
 }
 
 void FakeRateSelector::LoadBranchesNanoAOD(Long64_t entry, std::pair<Systematic, std::string> variation) {
     Analyzer.LoadBranchesNanoAOD(entry,variation);
+    fReader.SetLocalEntry(entry);
+    
     channelName_ = "all";
     if(Analyzer.looseLeptons.size() == 1) {
         if(Analyzer.looseLeptons[0].Id() == PID_MUON) channelName_ = "m";
 	else channelName_ = "e";
-    } 
+    }
+    
     channel_ = channelMap_[channelName_];
 }
 
@@ -38,15 +42,21 @@ void FakeRateSelector::FillHistograms(Long64_t entry, std::pair<Systematic, std:
     // need 3 loose leptons
     size_t N_LEPS_FAKE = 1;
     
-    if (Analyzer.looseLeptons.size() != N_LEPS_FAKE)    return;
+    //if (Analyzer.looseLeptons.size() != N_LEPS_FAKE)    return;
+    //std::cout << Analyzer.looseLeptons.size() << "\n";
     int tagLepIdx = -1;
     for(size_t i=0; i < Analyzer.looseLeptons.size(); ++i) {
 	auto lep = Analyzer.looseLeptons[i];
 	if(Analyzer.passFakeableCuts(lep)) {
 	    if(tagLepIdx >= 0) return;
-	    tagLepIdx = i;
+	    if((*HLT_Mu8 && channel_ == m) || (*HLT_Ele8_CaloIdM_TrackIdM_PFJet30 && channel_ == e)) {
+		tagLepIdx = i;
+	    } else {
+	    	return;
+	    }
 	}
     }
+    if(tagLepIdx < 0) return;
     LorentzVector met(Analyzer.MET, 0, Analyzer.type1_pfMETPhi, Analyzer.MET);
     LorentzVector tagLep = Analyzer.looseLeptons[tagLepIdx].v;
     double mt = std::sqrt(2.*met.Et()*tagLep.pt()*(1.-cos(VectorUtil::DeltaPhi(tagLep, met))));
@@ -85,9 +95,9 @@ void FakeRateSelector::FillHistograms(Long64_t entry, std::pair<Systematic, std:
     passingLoose1DPt_map[channel_]->Fill(tagPt, loose_weight);
     passingLoose1DEta_map[channel_]->Fill(tagEta, loose_weight);
     if (Analyzer.goodLeptons.size() == N_LEPS_FAKE) {
-    	passingTight2D_map[channel_]->Fill(tagPt, tagEta, weight);
-    	passingTight1DPt_map[channel_]->Fill(tagPt, weight);
-    	passingTight1DEta_map[channel_]->Fill(tagEta, weight);
+	passingTight2D_map[channel_]->Fill(tagPt, tagEta, weight);
+	passingTight1DPt_map[channel_]->Fill(tagPt, weight);
+	passingTight1DEta_map[channel_]->Fill(tagEta, weight);
     }
 }
 

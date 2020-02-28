@@ -35,10 +35,10 @@ public :
     std::unordered_map<int, TH1D*> passingLoose1DEta_map;        
                                             
 
-    // TH2D* ratio2D_;
-    // TH1D* ratio1DPt_;
-    // TH1D* ratio1DEta_;
-
+    TTreeReader fReader;
+    TTreeReaderValue<Bool_t> HLT_Mu8 = {fReader, "HLT_Mu8"};
+    TTreeReaderValue<Bool_t> HLT_Ele8_CaloIdM_TrackIdM_PFJet30 = {fReader, "HLT_Ele8_CaloIdM_TrackIdM_PFJet30"};
+    
     double weight = 1.0;
 
     const float FR_MAX_PT_ = 50;

@@ -97,7 +97,7 @@ void SelectorBase::Init(TTree *tree)
 	selection_ = enumFactory.getEnum(selectionName_);
     } else {
 	selection_ = enumFactory.addEnum(selectionName_);
-	fwLog(fwlog::kWarning) << "Selection ("<< selectionName_ << ") not found.\n";
+	fwLog(fwlog::kDebug) << "Selection ("<< selectionName_ << ") not found.\n";
     }
     
     // Setup Year
@@ -105,7 +105,7 @@ void SelectorBase::Init(TTree *tree)
 	year_ = enumFactory.getEnum(yearName_);
     } else {
 	year_ = enumFactory.addEnum(yearName_);
-	fwLog(fwlog::kWarning)<< "Year ("<< yearName_ << ") not found.\n";
+	fwLog(fwlog::kDebug)<< "Year ("<< yearName_ << ") not found.\n";
     }
 
     fwlog::setPresentLogLevel(fwlogLevel);

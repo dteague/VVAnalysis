@@ -204,7 +204,6 @@ class SelectorDriver(object):
             select.addSubprocesses(vec)
         # Only add for one channel
         addSumweights = self.addSumweights and self.channels.index(chan) == 0 and "data" not in dataset
-        
         if addSumweights:
             # Avoid accidentally combining sumweights across datasets
             currfile_name = self.current_file.GetName()
@@ -220,7 +219,7 @@ class SelectorDriver(object):
                 sumweights_hist = ROOT.TH1D("sumweights", "sumweights", 100, 0, 100)
             sumweights_hist.SetDirectory(ROOT.gROOT)
             self.current_file = ROOT.TFile.Open(currfile_name, "update")
-        
+            
         self.processLocalFiles(select, file_path, addSumweights, chan)
         output_list = select.GetOutputList()
         processes = [dataset] + (self.regions[dataset] if dataset in self.regions else [])
