@@ -28,6 +28,8 @@ class CombineCardTools(object):
         self.outputFolder = "."
         self.channelsToCombine = {}
         self.theoryVariations = {}
+        self.extraCardVars = ""
+        self.cardGroups = ""
 
     def setPlotGroups(self, xsecMap):
         self.crossSectionMap = xsecMap
@@ -113,10 +115,14 @@ class CombineCardTools(object):
         varDownRef = varUpRef.Clone(varUpRef.GetName().replace("Up", "Down"))
 
         varHists = []
-        for i in range(hist.GetNbinsX()+1):
+        # TODO: this needs to be made more general
+        if correlation:
+            self.extraCardVars += "%s    shape   1\n" % varName
+        for i in range(1, hist.GetNbinsX()+1):
             if not correlation:
                 varUp = varUpRef.Clone(varUpRef.GetName().replace(varName, varName+str(i)))
                 varDown = varDownRef.Clone(varDownRef.GetName().replace(varName, varName+str(i)))
+                self.extraCardVars += "%s%i    shape   1\n" % (varName, i)
             else:
                 varUp = varUpRef
                 varDown = varDownRef
@@ -270,7 +276,7 @@ class CombineCardTools(object):
             else:
                 self.yields["all"][processName] += self.yields[chan][processName]
 
-            if processName in self.perbinVariations:
+            if processName in self.perbinVariations and chan == self.channels[0]:
                 for varName, var, corr in self.perbinVariations[processName]:
                     map(lambda x: group.Add(x), self.perBinVariationHists(hist, varName, var, corr))
 
@@ -343,7 +349,7 @@ class CombineCardTools(object):
         if 'scale' not in self.theoryVariations[processName]:
             return []
         scaleVars = self.theoryVariations[processName]['scale']
-
+        
         scaleHists = HistTools.getScaleHists(weightHist, processName, self.rebin, 
                 entries=scaleVars['entries'], 
                 exclude=scaleVars['exclude'], 
@@ -393,6 +399,7 @@ class CombineCardTools(object):
         chan_dict["nuisances"] = nuisances
         chan_dict["fit_variable"] = self.fitVariable
         chan_dict["output_file"] = self.outputFile.GetName()
+        chan_dict["card_append"] = self.extraCardVars + "\n\n" + self.cardGroups 
         outputCard = self.templateName.split("/")[-1].format(channel=chan, label=label) 
         outputCard = outputCard.replace("template", outlabel)
         outputCard = outputCard.replace("__", "_")
@@ -400,5 +407,6 @@ class CombineCardTools(object):
             "/".join([self.outputFolder, outputCard]),
             chan_dict
         )
+        chan_dict.pop("card_append")
         print chan_dict
 
