@@ -74,34 +74,32 @@ def makeHistFile(args):
     fOut = ROOT.TFile(tmpFileName if not toCombine else tmpFileName.replace(".root", "sel.root"), "recreate")
     combinedNames = [fOut.GetName()]
 
-    addScaleFacs = False
-    if args['analysis'] == "WZxsec2016" or args['analysis'] == 'Zstudy_2016':
-        addScaleFacs = True
-    addScaleFacs=False
+    addScaleFacs = args["scaleFactor"]
     fr_inputs = []
     sf_inputs = [ROOT.TParameter(bool)("applyScaleFacs", False)]
 
     if addScaleFacs:
         fScales = ROOT.TFile('data/scaleFactors.root')
-        mCBTightFakeRate = fScales.Get("mCBTightFakeRate")
-        eCBTightFakeRate = fScales.Get("eCBTightFakeRate")
+        # mCBTightFakeRate = fScales.Get("mCBTightFakeRate")
+        # eCBTightFakeRate = fScales.Get("eCBTightFakeRate")
 
-        muonIsoSF = fScales.Get('muonIsoSF')
+        # muonIsoSF = fScales.Get('muonIsoSF')
         muonIdSF = fScales.Get('muonMediumIdSF')
         electronTightIdSF = fScales.Get('electronTightIdSF')
-        electronGsfSF = fScales.Get('electronGsfSF')
+        # electronGsfSF = fScales.Get('electronGsfSF')
         pileupSF = fScales.Get('pileupSF')
         
         #fPrefireEfficiency = ROOT.TFile('data/Map_Jet_L1FinOReff_bxm1_looseJet_JetHT_Run2016B-H.root')
         #fPrefireEfficiency = ROOT.TFile('data/Map_Jet_L1FinOReff_bxm1_looseJet_SingleMuon_Run2016B-H.root')
         # prefireEff = fPrefireEfficiency.Get('prefireEfficiencyMap')
 
-        bScales = ROOT.TFile('data/BEff.root')
-        bScales.SetName("BScales")
+        # bScales = ROOT.TFile('data/BEff.root')
+        # bScales.SetName("BScales")
         
 #        fr_inputs = [eCBTightFakeRate, mCBTightFakeRate,]
         fr_inputs = []
-        sf_inputs = [electronTightIdSF, electronGsfSF, muonIsoSF, muonIdSF, pileupSF, bScales]
+  #      sf_inputs = [electronTightIdSF, electronGsfSF, muonIsoSF, muonIdSF, pileupSF, bScales]
+        sf_inputs = [electronTightIdSF, muonIdSF, pileupSF]
         sf_inputs.append(ROOT.TParameter(bool)("applyScaleFacs", True))
     else:
         sf_inputs = [ROOT.TParameter(bool)("applyScaleFacs", args['scaleFactor'])]    
