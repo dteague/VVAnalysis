@@ -71,20 +71,27 @@ void ThreeLepSelector::Init(TTree *tree) {
     //allChannels_ = {{mm, "mm"}, {ee, "ee"}, {em, "em"}, {all, "all"}, {lll, "lll"}};
     allChannels_ = {{SS, "SS"}, {OS, "OS"}, {mult, "mult"}, {all, "all"}, {one, "one"}};
     
-    hists1D_ = {
-		"CutFlow",       "ptl1",     "etal1",    "ptl2",     "etal2",        "SR",
-		"bjetpt",       "jetpt",       "nbjet",    "njet",     "nleps", 
-		//"CRZ_nbjet",    "CRZ_njet",    "CRZ_HT",   "CRZ_Met",
-		"Met",      "HT",           "weight","sphericity", "centrality",
-		//"CRW_HT",       "CRW_Met",     "CRZ_ptl3",  "CRW_nbjet",    "CRW_njet",
-		"ptj1",         "ptj2",        "ptj3",     "ptj1OverHT",
-		"etaj1", "etaj2","etaj3", "etab1", "etab2","etab3", "dphi_l1j1","dphi_l1j2","dphi_l1j3",
-		"ptb1",         "ptb2",        "ptb3",     "ptb1OverHT",
-		"dilepMass",    "dilepCharge", "DRLep", "DRjet", "dijetMass",
-		"Shape1", "Shape2", "LepCos", "JLep1Cos", "JLep2Cos", "JBCos", "DRjb", "etaj", "etab",
-		"ntightbjet", "nloosebjet","nlooseleps",
-    };
-    hists2D_ = {"bJetvsJets",    "Beff_b_btag", "Beff_j_btag", "Beff_b", "Beff_j"};
+    // hists1D_ = {"CutFlow",       "ptl1",     "etal1",    "ptl2",     "etal2",        "SR",
+//     "bjetpt",       "jetpt",       "nbjet",    "njet",     "nleps",
+// //"CRZ_nbjet",    "CRZ_njet",    "CRZ_HT",   "CRZ_Met",
+//     "Met",      "HT",           "weight","sphericity", "centrality",
+//     //"CRW_HT",       "CRW_Met",     "CRZ_ptl3",  "CRW_nbjet",    "CRW_njet",
+//     "ptj1",         "ptj2",        "ptj3",     "ptj1OverHT",
+//     "etaj1", "etaj2","etaj3", "etab1", "etab2","etab3", "dphi_l1j1","dphi_l1j2","dphi_l1j3",
+//     "detaj12", "detaj13", "detaj23",
+//     "ptb1",         "ptb2",        "ptb3",     "ptb1OverHT",
+//     "dilepMass",    "dilepCharge", "DRLep", "DRjet", "dijetMass",
+//     "Shape1", "Shape2", "LepCos", "JLep1Cos", "JLep2Cos", "JBCos", "DRjb", "etaj", "etab",
+//     "ntightbjet", "nloosebjet","nlooseleps",
+// };
+//     hists2D_ = {"bJetvsJets",    "Beff_b_btag", "Beff_j_btag", "Beff_b", "Beff_j"};
+
+    treeNames = {"NJets", "NBJets", "NlooseBJets", "NtightBJets",
+    "NLeps", "NlooseLeps", "DilepCharge",
+    "HT", "MET", "l1Pt", "l2Pt", "lepMass", "jetMass", "jetDR",
+    "sphericity", "centrality", "j1Pt", "j2Pt", "j3Pt", "j4Pt",
+    "j5Pt", "j6Pt", "j7Pt", "j8Pt", "b1Pt", "b2Pt", "b3Pt",
+    "b4Pt", "weight", "Shape1", "Shape2",};
 
     SelectorBase::Init(tree);
     TNamed* name = (TNamed *) GetInputList()->FindObject("name");
@@ -95,38 +102,12 @@ void ThreeLepSelector::Init(TTree *tree) {
     else year_ = yr2016;
 
 #ifdef USETREE
-    AddObject<TTree>(treeMap["tree"], "testTree", "testTree");
-    treeMap["tree"]->Branch("NJets", &bNJets);
-    treeMap["tree"]->Branch("NBJets", &bnBJets);
-    treeMap["tree"]->Branch("NlooseBJets", &bnlBJets);
-    treeMap["tree"]->Branch("NtightBJets", &bntBJets);
-    treeMap["tree"]->Branch("NLeps", &bnLeps);
-    treeMap["tree"]->Branch("NlooseLeps", &bnlLeps);
-    treeMap["tree"]->Branch("DilepCharge", &bDilepCharge);
-    treeMap["tree"]->Branch("HT", &bHT);
-    treeMap["tree"]->Branch("MET", &bMET);
-    treeMap["tree"]->Branch("l1Pt", &bl1Pt);
-    treeMap["tree"]->Branch("l2Pt", &bl2Pt);
-    treeMap["tree"]->Branch("lepMass", &blMass);
-    treeMap["tree"]->Branch("jetMass", &bjMass);
-    treeMap["tree"]->Branch("jetDR", &bjdr);
-    treeMap["tree"]->Branch("sphericity",&bsphere);
-    treeMap["tree"]->Branch("centrality", &bCentral);
-    treeMap["tree"]->Branch("j1Pt", &bj1Pt);
-    treeMap["tree"]->Branch("j2Pt", &bj2Pt);
-    treeMap["tree"]->Branch("j3Pt", &bj3Pt);
-    treeMap["tree"]->Branch("j4Pt", &bj4Pt);
-    treeMap["tree"]->Branch("j5Pt", &bj5Pt);
-    treeMap["tree"]->Branch("j6Pt", &bj6Pt);
-    treeMap["tree"]->Branch("j7Pt", &bj7Pt);
-    treeMap["tree"]->Branch("j8Pt", &bj8Pt);
-    treeMap["tree"]->Branch("b1Pt",&bb1Pt);
-    treeMap["tree"]->Branch("b2Pt",&bb2Pt);
-    treeMap["tree"]->Branch("b3Pt",&bb3Pt);
-    treeMap["tree"]->Branch("b4Pt",&bb4Pt);
-    treeMap["tree"]->Branch("weight",&weight);
-    treeMap["tree"]->Branch("Shape1",&bShape1);
-    treeMap["tree"]->Branch("Shape2",&bShape2);
+    AddObject<TTree>(workTree, "testTree", "testTree");
+    for(auto name: treeNames) {
+        treeVars[name] = 0;
+        workTree->Branch(name.c_str(), &treeVars[name]);
+    }
+
     std::cout << "here" << "\n";
 #endif
 
@@ -286,23 +267,21 @@ void ThreeLepSelector::LoadBranchesNanoAOD(Long64_t entry, std::pair<Systematic,
 
     b.SetEntry(entry);
 
-    if (nElectron > N_KEEP_MU_E_ || nMuon > N_KEEP_MU_E_ || nGenPart > N_KEEP_GEN_) {
-	std::string message = "Found more electrons or muons than max read number.\n    Found ";
-	message += std::to_string(nElectron);
-	message += " electrons.\n    Found ";
-	message += std::to_string(nMuon);
-	message += " Muons\n  --> Max read number was ";
-	message += std::to_string(N_KEEP_MU_E_);
-	message += "\nExiting because this can cause problems. Increase N_KEEP_MU_E_ to avoid this error.\n";
-	message += std::to_string(nGenPart);
-	message += " Gens\n  --> Max read number was ";
-	message += std::to_string(N_KEEP_GEN_);
-	message += "\nExiting because this can cause problems. Increase N_KEEP_GEN_ to avoid this error.\n";
-	throw std::domain_error(message);
-    }
+    // if (nElectron > N_KEEP_MU_E_ || nMuon > N_KEEP_MU_E_ || nGenPart > N_KEEP_GEN_) {
+	// std::string message = "Found more electrons or muons than max read number.\n    Found ";
+	// message += std::to_string(nElectron);
+	// message += " electrons.\n    Found ";
+	// message += std::to_string(nMuon);
+	// message += " Muons\n  --> Max read number was ";
+	// message += std::to_string(N_KEEP_MU_E_);
+	// message += "\nExiting because this can cause problems. Increase N_KEEP_MU_E_ to avoid this error.\n";
+	// message += std::to_string(nGenPart);
+	// message += " Gens\n  --> Max read number was ";
+	// message += std::to_string(N_KEEP_GEN_);
+	// message += "\nExiting because this can cause problems. Increase N_KEEP_GEN_ to avoid this error.\n";
+	// throw std::domain_error(message);
+    // }
 
-    if(eventVec[event]) return;
-    
     /// basic setups
     setupElectrons();
     setupMuons();
@@ -892,80 +871,81 @@ void ThreeLepSelector::FillHistograms(Long64_t entry, std::pair<Systematic, std:
     
     
     for(auto i : jetList) {
-	Fill1D("jetpt", goodJets[i].Pt());
-	Fill1D("etaj", goodJets[i].Eta());
+        Fill1D("jetpt", goodJets[i].Pt());
+        Fill1D("etaj", goodJets[i].Eta());
     }
+    Fill1D("detaj12", abs(goodJets[jetList.at(0)].Eta()-goodJets[jetList.at(1)].Eta()));
+    if(jetList.size() > 2) {
+        Fill1D("detaj13", abs(goodJets[jetList.at(0)].Eta()-goodJets[jetList.at(2)].Eta()));
+        Fill1D("detaj23", abs(goodJets[jetList.at(1)].Eta()-goodJets[jetList.at(2)].Eta()));
+    }
+
+    
     for(auto i : bjetList) {
-	Fill1D("bjetpt", goodJets[i].Pt());
-	Fill1D("etab", goodJets[i].Eta());
+        Fill1D("bjetpt", goodJets[i].Pt());
+        Fill1D("etab", goodJets[i].Eta());
     }
     
     int k= 1;
     for(auto it: jetList) {
-	if(k > 3) break;
-	std::string intStr = std::to_string(k);
-	LorentzVector jit = goodJets.at(it).v;
-	Fill1D(("ptj" + intStr).c_str(), jit.Pt());
-	Fill1D(("etaj" + intStr).c_str(), jit.Eta());
-	Fill1D(("dphi_l1j" + intStr).c_str(), abs(ROOT::Math::VectorUtil::DeltaPhi(goodLeptons[0].v, jit)));
-	k++;
+        if(k > 3) break;
+        std::string intStr = std::to_string(k);
+        LorentzVector jit = goodJets.at(it).v;
+        Fill1D(("ptj" + intStr).c_str(), jit.Pt());
+        Fill1D(("etaj" + intStr).c_str(), jit.Eta());
+        Fill1D(("dphi_l1j" + intStr).c_str(), abs(ROOT::Math::VectorUtil::DeltaPhi(goodLeptons[0].v, jit)));
+        k++;
     }
     k=1;
     for(auto it: bjetList) {
-	if(k > 3) break;
-	std::string intStr = std::to_string(k);
-	LorentzVector jit = goodJets.at(it).v;
-	Fill1D(("ptb" + intStr).c_str(), jit.Pt());
-	Fill1D(("etab" + intStr).c_str(), jit.Eta());
-	k++;
+        if(k > 3) break;
+        std::string intStr = std::to_string(k);
+        LorentzVector jit = goodJets.at(it).v;
+        Fill1D(("ptb" + intStr).c_str(), jit.Pt());
+        Fill1D(("etab" + intStr).c_str(), jit.Eta());
+        k++;
     }
 #ifdef USETREE
-    bNJets = nJets;
-    bnBJets = nBJets;
-    bnlBJets =NlooseBs;
-    bntBJets =NtightBs;
-    bnLeps = goodLeptons.size();
-    bnlLeps = looseLeptons.size();
-    bDilepCharge = goodLeptons[0].Charge() * goodLeptons[1].Charge() > 0 ? 1 : -1;
-    bHT = HT;
-    bMET = MET;
-    bl1Pt = goodLeptons[0].Pt();
-    bl2Pt = goodLeptons[1].Pt();
-    blMass = (goodLeptons[0].v+goodLeptons[1].v).M();
-    bjMass = (goodJets[0].v+goodJets[1].v).M();
-    bjdr = reco::deltaR(goodJets[0].v,goodJets[1].v);
-    bsphere = JetSphericity(goodJets);
-    bCentral = JetCentrality(goodJets,HT);
-    bj1Pt = goodJets.at(jetList[0]).Pt();
-    bj2Pt = (jetList.size() > 1) ? goodJets.at(jetList[1]).Pt() : 0;
-    bj3Pt = (jetList.size() > 2) ? goodJets.at(jetList[2]).Pt() : 0;
-    bj4Pt = (jetList.size() > 3) ? goodJets.at(jetList[3]).Pt() : 0;
-    bj5Pt = (jetList.size() > 4) ? goodJets.at(jetList[4]).Pt() : 0;
-    bj6Pt = (jetList.size() > 5) ? goodJets.at(jetList[5]).Pt() : 0;
-    bj7Pt = (jetList.size() > 6) ? goodJets.at(jetList[6]).Pt() : 0;
-    bj8Pt = (jetList.size() > 7) ? goodJets.at(jetList[7]).Pt() : 0;
-    bb1Pt = goodJets.at(bjetList[0]).Pt();
-    bb2Pt = (bjetList.size() > 1) ? goodJets.at(bjetList[1]).Pt() : 0;
-    bb3Pt = (bjetList.size() > 2) ? goodJets.at(bjetList[2]).Pt() : 0;
-    bb4Pt = (bjetList.size() > 3) ? goodJets.at(bjetList[3]).Pt() : 0;
-    bShape1 = event_pair.first;
-    bShape2 = event_pair.second;
-    
-    // bHTb;
-    // bjlMass;
-    // bdphil;
-    // bdetal
-    
-    treeMap["tree"]->Fill();
+    treeVars["NJets"] = nJets;
+    treeVars["NBJets"] = nBJets;
+    treeVars["NlooseBJets"] =NlooseBs;
+    treeVars["NtightBJets"] =NtightBs;
+    treeVars["NLeps"] = goodLeptons.size();
+    treeVars["NlooseLeps"] = looseLeptons.size();
+    treeVars["DilepCharge"] = goodLeptons[0].Charge() * goodLeptons[1].Charge() > 0 ? 1 : -1;
+    treeVars["HT"] = HT;
+    treeVars["MET"] = MET;
+    treeVars["l1Pt"] = goodLeptons[0].Pt();
+    treeVars["l2Pt"] = goodLeptons[1].Pt();
+    treeVars["lepMass"] = (goodLeptons[0].v+goodLeptons[1].v).M();
+    treeVars["jetMass"] = (goodJets[0].v+goodJets[1].v).M();
+    treeVars["jetDR"] = reco::deltaR(goodJets[0].v,goodJets[1].v);
+    treeVars["sphericity"] =  JetSphericity(goodJets);
+    treeVars["centrality"] = JetCentrality(goodJets,HT);
+    treeVars["j1Pt"] = goodJets.at(jetList[0]).Pt();
+    treeVars["j2Pt"] = (jetList.size() > 1) ? goodJets.at(jetList[1]).Pt() : 0;
+    treeVars["j3Pt"] = (jetList.size() > 2) ? goodJets.at(jetList[2]).Pt() : 0;
+    treeVars["j4Pt"] = (jetList.size() > 3) ? goodJets.at(jetList[3]).Pt() : 0;
+    treeVars["j5Pt"] = (jetList.size() > 4) ? goodJets.at(jetList[4]).Pt() : 0;
+    treeVars["j6Pt"] = (jetList.size() > 5) ? goodJets.at(jetList[5]).Pt() : 0;
+    treeVars["j7Pt"] = (jetList.size() > 6) ? goodJets.at(jetList[6]).Pt() : 0;
+    treeVars["j8Pt"] = (jetList.size() > 7) ? goodJets.at(jetList[7]).Pt() : 0;
+    treeVars["b1Pt"] = goodJets.at(bjetList[0]).Pt();
+    treeVars["b2Pt"] = (bjetList.size() > 1) ? goodJets.at(bjetList[1]).Pt() : 0;
+    treeVars["b3Pt"] = (bjetList.size() > 2) ? goodJets.at(bjetList[2]).Pt() : 0;
+    treeVars["b4Pt"] = (bjetList.size() > 3) ? goodJets.at(bjetList[3]).Pt() : 0;
+    treeVars["Shape1"] = event_pair.first;
+    treeVars["Shape2"] = event_pair.second;
+    workTree->Fill();
 #endif
  
 }
 
 std::vector<GoodPart>::iterator ThreeLepSelector::findJet(std::vector<GoodPart>::iterator& start, int pid) {
     while(start != goodJets.end()) {
-	if(pid == PID_BJET && start->passedBJetSel()) return start;
-	else if(pid != PID_BJET && start->passedJetSel()) return start;
-	++start;
+        if(pid == PID_BJET && start->passedBJetSel()) return start;
+        else if(pid != PID_BJET && start->passedJetSel()) return start;
+        ++start;
     }
     return goodJets.end();
 }

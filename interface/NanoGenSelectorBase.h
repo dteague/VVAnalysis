@@ -91,7 +91,7 @@ public :
     TBranch* b_LHEUnknownWeight;
     TBranch* b_nLHEUnknownWeightAltSet1;
     TBranch* b_LHEUnknownWeightAltSet1;
-
+    int None;
     bool altScaleWeights_ = false;
     bool pdfWeights_ = false;
     bool unknownWeights_ = false;
