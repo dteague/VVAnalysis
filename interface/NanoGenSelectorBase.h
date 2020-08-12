@@ -39,6 +39,8 @@ public :
     std::vector<LorentzVector> jets;
     LorentzVector genMet;
 
+    int None;
+    
     int centralWeightIndex_ = 0;
     unsigned int nLeptons_ = 1;
     static const unsigned int N_LHESCALE_WEIGHTS_ = 1000;

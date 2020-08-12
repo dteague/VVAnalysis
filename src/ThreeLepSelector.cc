@@ -117,6 +117,16 @@ void ThreeLepSelector::SetBranchesNanoAOD() {
     //  NECESSARY!!!!
     b.CleanUp();
     
+    //fReader.Restart();
+    if(year_ == yr2018 || year_ == yrdefault) {
+        b.SetBranch("Electron_mvaFall17V2noIso", Electron_MVA);
+    } else if(year_ == yr2017) {
+        b.SetBranch("Electron_mvaFall17V1noIso", Electron_MVA);
+    } else if(year_ == yr2016 || year_ == yrdefault) {
+        b.SetBranch("Electron_mvaSpring16GP", Electron_MVA);
+        //Electron_cutBased = {fReader, "Electron_cutBased_Sum16"};
+    }
+    
 #ifdef TRIGGER
     b.SetBranch("HLT_DoubleMu8_Mass8_PFHT300", HLT_DoubleMu8_Mass8_PFHT300);
     b.SetBranch("HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300", HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300);

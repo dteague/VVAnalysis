@@ -24,18 +24,6 @@ struct BranchManager {
     fChain->SetBranchAddress(name.c_str(), &holder, &branchHolder.back());
   }
 
-  template<typename T>
-  void SetSpecificBranch(std::string name, T& holder) {
-    if (specificBranch.find(name) != specificBranch.end())
-        specificBranch[name] = {};
-    fChain->SetBranchAddress(name.c_str(), &holder, &specificBranch[name]);
-  }
-
-  void SetEntry(int entry) {
-    for(auto& it: branchHolder) {
-      it->GetEntry(entry);
-    }
-  }
 
   bool branchExists(std::string name) {
     return bool(fChain->FindBranch(name.c_str()));
@@ -45,9 +33,9 @@ struct BranchManager {
     specificBranch[name]->GetEntry(entry);
   }
   
-  void CleanUp() {
-    branchHolder.clear();
-    specificBranch.clear();
+    void CleanUp() {
+        branchHolder.clear();
+        specificBranch.clear();
   }
 
   void CleanSpecificBranch(std::string name) {
